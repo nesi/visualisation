@@ -1,0 +1,131 @@
+<html>
+
+<head>
+    <title>Parotid Gland Tubes</title>
+    <style>
+			body {
+				background-color:#000;
+				color: #eee;
+				padding:0;
+				margin:0;
+				font-weight:bold;
+				overflow:hidden;
+
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+			}
+
+			#info {
+        background-color:#000;
+				position: absolute;
+				top: 0px;
+        width: 100%;
+				padding: 5px;
+			}
+
+			a {
+				color: #0080ff;
+			}
+
+			b { color:orange }
+    </style>
+    <script src="js/three.min.js"></script>
+    <script src="js/Detector.js"></script>
+    <script src="js/libs/stats.min.js"></script>
+    <script src="js/loaders/STLLoader.js"></script>
+    <script src="js/controls/FlyControls.js"></script>
+    <script>
+        // Author: Nick Young (nick.young@nesi.org.nz)
+        // Credit to James Sneyd and Shawn Means of the University of Auckland for the 3D model of the Parotid Gland
+    
+        // If the browser doesn't support WebGL, display an error message
+        if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+        // Initialise some variables
+        var container, renderer, scene, camera, controls, loader, stats;
+
+        // This function will be called when the HTML body has loaded
+        function init() {
+        
+            // The container is the HTML element that contains the WebGL Canvas
+            container = document.body;
+            
+            // Render this scene using WebGL
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // The scene contains 3D objects
+            scene = new THREE.Scene();
+            
+            // PerspectiveCamera's arguments are FOV, aspect ratio, near plane, far plane 
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            // Set the camera's position to x=0,y=15,z=15
+            camera.position.set(0, 15, 15);
+            var center = new THREE.Vector3(0, 20, 0);
+            // Point the camera at the center of the object
+            camera.lookAt(center);
+
+            // Bind the keyboard and mouse to the camera
+            controls = new THREE.FlyControls(camera);
+            controls.movementSpeed = .1;
+            controls.domElement = container;
+            controls.rollSpeed = Math.PI / 120;
+            controls.autoForward = false;
+            controls.dragToLook = true;
+
+            // This loads the vertices
+            loader = new THREE.STLLoader();
+            loader.load('assets/tubes.stl', function(geometry) {
+                console.log("Vertices loaded");
+                // Assign a RGB color based on the normals
+                var material = new THREE.MeshNormalMaterial({
+                    // Color in both sides so that we can see the inside of the object
+                    side: THREE.DoubleSide,
+                    shading: THREE.SmoothShading
+                });
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(0, 0, 0);
+                scene.add(mesh);
+            });
+            
+            // The stats element prints the FPS
+            //stats = new Stats();
+            //stats.domElement.style.position = 'absolute';
+            //stats.domElement.style.top = '0px';
+            //container.appendChild(stats.domElement);
+            
+            // When the window gets resized, call the function onWindowResize() to handle that
+            window.addEventListener('resize', onWindowResize, false);
+            // Start rendering
+            render();
+        }
+
+        function onWindowResize(event) {
+            console.log("Handling window resize");
+            // Set the renderer to fit into the new window size
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            // Update the camera's aspect ratio
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        function render() {
+            // This tells the browser to call this function before the next repaint
+            requestAnimationFrame(render);
+            // Render the scene using the scene and camera we set up in init()
+            renderer.render(scene, camera);
+            controls.update(1);
+            //stats.update();
+        }
+    </script>
+</head>
+
+<body onload='init()'>
+  <div id="info">Controls:<br/>
+    <b>WASD</b> move, <b>R|F</b> up | down, <b>Q|E</b> roll, <b>up|down</b> pitch, <b>left|right</b> yaw. Left click + mouse to look<br/>
+  </div>
+</body>
+
+</html>
