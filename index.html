@@ -32,6 +32,7 @@
     </style>
     <script src="js/three.min.js"></script>
     <script src="js/Detector.js"></script>
+    <script src="js/effects/OculusRiftEffect.js"></script>
     <script src="js/libs/stats.min.js"></script>
     <script src="js/loaders/STLLoader.js"></script>
     <script src="js/controls/FlyControls.js"></script>
@@ -41,6 +42,18 @@
     
         // If the browser doesn't support WebGL, display an error message
         if (!Detector.webgl) Detector.addGetWebGLMessage();
+        
+        function get_query() {
+          var url = location.href;
+          var qs = url.substring(url.indexOf('?') + 1).split('&');
+          for (var i = 0, result = {}; i < qs.length; i++) {
+            qs[i] = qs[i].split('=');
+            result[qs[i][0]] = decodeURIComponent(qs[i][1]);
+          }
+          return result;
+        }
+
+        var $_GET = get_query();
 
         // Initialise some variables
         var container, renderer, scene, camera, controls, loader, stats;
@@ -55,6 +68,13 @@
             renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             container.appendChild(renderer.domElement);
+            
+            if ($_GET['vr']) {
+              // worldScale 100 means that 100 Units == 1m
+              console.log("Oculus Rift mode enabled");
+              renderer = new THREE.OculusRiftEffect( renderer, {worldScale: 100} );
+              renderer.setSize( window.innerWidth, window.innerHeight );
+            }
 
             // The scene contains 3D objects
             scene = new THREE.Scene();
