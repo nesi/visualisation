@@ -57,6 +57,14 @@
 
         // Initialise some variables
         var container, renderer, scene, camera, controls, loader, stats;
+        
+        var model = $_GET['model'];
+        var filename = 'tubes.stl';
+        
+        if (model == 'textile') {
+            document.title='Textile';
+            filename = 'textile.stl';
+        }
 
         // This function will be called when the HTML body has loaded
         function init() {
@@ -97,7 +105,7 @@
 
             // This loads the vertices
             loader = new THREE.STLLoader();
-            loader.load('assets/tubes.stl', function(geometry) {
+            loader.load('assets/' + filename, function(geometry) {
                 console.log("Vertices loaded");
                 // Assign a RGB color based on the normals
                 var material = new THREE.MeshNormalMaterial({
@@ -107,6 +115,9 @@
                 });
                 var mesh = new THREE.Mesh(geometry, material);
                 mesh.position.set(0, 0, 0);
+                if (model == 'textile') {
+                  mesh.position.set(-100, -100, 0);
+                }
                 scene.add(mesh);
             });
             

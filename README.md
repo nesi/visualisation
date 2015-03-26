@@ -7,3 +7,5 @@ The resulting website can be found at http://nesi.github.io/visualisation/
 Oculus Rift support is enabled by adding the vr parameter, e.g.
 
 http://nesi.github.io/visualisation/?vr
+
+Textile model can be found at http://nesi.github.io/visualisation/?model=textile
